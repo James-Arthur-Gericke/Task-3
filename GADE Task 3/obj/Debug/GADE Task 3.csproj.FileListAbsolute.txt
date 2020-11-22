@@ -1,0 +1,10 @@
+E:\GADE Task 3\bin\Debug\GADE Task 3.exe.config
+E:\GADE Task 3\bin\Debug\GADE Task 3.exe
+E:\GADE Task 3\bin\Debug\GADE Task 3.pdb
+E:\GADE Task 3\obj\Debug\GADE Task 3.csprojAssemblyReference.cache
+E:\GADE Task 3\obj\Debug\GADE_Task_3.Properties.Resources.resources
+E:\GADE Task 3\obj\Debug\GADE Task 3.csproj.GenerateResource.cache
+E:\GADE Task 3\obj\Debug\GADE Task 3.csproj.CoreCompileInputs.cache
+E:\GADE Task 3\obj\Debug\GADE Task 3.exe
+E:\GADE Task 3\obj\Debug\GADE Task 3.pdb
+E:\GADE Task 3\obj\Debug\GADE_Task_3.Form1.resources
