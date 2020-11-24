@@ -11,14 +11,16 @@ namespace GADE_Task_3
     enum VisionPosition { North, South, West, East };
 
 
-    abstract class Character: Tile
+    abstract class Character : Tile
     {
 
-        public Character(int x, int y, TileType i) : base(x, y, i) { objectVision = new Tile[4]; }
+        public Character(int x, int y, TileType i) : base(x, y, i) { objectVision = new Tile[4]; goldPurse = 0; }
 
-        protected int HP, MaxHP, Damage;
+        protected int HP, MaxHP, Damage, goldPurse;
 
         protected Tile[] objectVision;
+
+        public int GoldPurse { get { return goldPurse; } set { goldPurse = value; } }
 
         public void setHP(int Value) { HP = Value; }
 
@@ -42,25 +44,28 @@ namespace GADE_Task_3
 
         public bool isDead() { return HP <= 0; }
 
-        public virtual bool CheckRange(Character target) { return DistanceTo(target)==1; }  
+        public virtual bool CheckRange(Character target) { return DistanceTo(target) == 1; }
 
         private int DistanceTo(Character target)
         {
-            int xPos = Math.Abs(target.getX()-getX()), yPos=Math.Abs(target.getY()-getY());
-            return xPos+yPos;                                        
+            int xPos = Math.Abs(target.getX() - getX()), yPos = Math.Abs(target.getY() - getY()); return xPos + yPos;
         }
 
+        public void Pickup(Item i)
+        {
+            if (i.ToString() == TileType.gold.ToString()) { Gold tempGold = (Gold)i; goldPurse += tempGold.Amount; }
+            // updates required for weapon updates
+        }
 
         public void Move(MovementEnum move)
         {
-
             switch (move)
             {
-                case MovementEnum.No_Movement:  break;
-                case MovementEnum.Up: Y--;      break;
-                case MovementEnum.Down: Y++;    break;
-                case MovementEnum.Left: X--;    break;
-                case MovementEnum.Right: X++;   break;
+                case MovementEnum.No_Movement: break;
+                case MovementEnum.Up: Y--; break;
+                case MovementEnum.Down: Y++; break;
+                case MovementEnum.Left: X--; break;
+                case MovementEnum.Right: X++; break;
             }
         }
 

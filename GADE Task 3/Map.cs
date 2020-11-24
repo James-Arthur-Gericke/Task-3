@@ -14,13 +14,15 @@ namespace GADE_Task_3
         private Enemy[] enemies;
         private int width, height;
         private Random random;
+        private Item[] myItems;
 
 
         public Tile[,] Mymap { set { mymap = value; } get { return mymap; } }
         public Enemy[] Enemies { set { enemies = value; } get { return enemies; } }
         public Hero _Hero { get { return _hero; } set { _hero = value; } }
+        public Item[] MyItems { get { return myItems; } set { myItems = value; } }
 
-        public Map(int minW, int maxW, int minH, int maxH, int numberOfEnemies)
+        public Map(int minW, int maxW, int minH, int maxH, int numberOfEnemies, int numberOfGoldDrops)
         {
             // 1. Create random size map
             random = new Random();
@@ -28,19 +30,37 @@ namespace GADE_Task_3
             mymap = new Tile[width, height]; enemies = new Enemy[numberOfEnemies];
             createEmptyMap(); createBoarderOfMap();
 
-
-
-            //2. Creating the objects
-            _hero = (Hero)Create(TileType.hero); mymap[_hero.getX(), _hero.getY()] = (Tile)_hero;
+            // 2. Creating the objects
+            _hero = (Hero)Create(TileType.hero); mymap[_hero.getX(), _hero.getY()] = (Tile)_hero; myItems = new Item[numberOfGoldDrops]; // added gold drop array
 
             for (int index = 0; index < enemies.Length; index++)
             {
-                enemies[index] = (Enemy)Create(TileType.goblin); mymap[enemies[index].getX(), enemies[index].getY()] = (Tile)enemies[index];
+                // section updated to randomize between goblin & mage enemy
+                int enemyRandomSelect = random.Next(0, 2);  //  ( 0 = Goblin , 1 = Mage)
+
+                if (enemyRandomSelect == 1) { enemies[index] = (Enemy)Create(TileType.goblin); mymap[enemies[index].getX(), enemies[index].getY()] = (Tile)enemies[index]; }
+                else { enemies[index] = (Enemy)Create(TileType.mage); mymap[enemies[index].getX(), enemies[index].getY()] = (Tile)enemies[index]; }
             }
 
+            for (int index = 0; index < myItems.Length; index++) // added section to add gold items
+            {
+                myItems[index] = (Item)Create(TileType.gold); mymap[myItems[index].getX(), myItems[index].getY()] = (Tile)myItems[index];
+            }
 
-            //3. update the vision of all characters
+            // 3. update the vision of all characters
             UpdateVision();
+        }
+
+        public Item GetItemAtPosition(int x, int y)
+        {
+            Item tempItem = null;
+
+            for (int index = 0; index < myItems.Length; index++)
+            {
+                if (myItems[index].getX() == x && myItems[index].getY() == y)
+                { tempItem = myItems[index]; index = myItems.Length + 1; }
+            }
+            return tempItem;
         }
 
         public void UpdateVision()
@@ -50,16 +70,19 @@ namespace GADE_Task_3
             _hero.setVision(VisionPosition.North, mymap[_hero.getX(), _hero.getY() - 1]);        // top object updated
             _hero.setVision(VisionPosition.South, mymap[_hero.getX(), _hero.getY() + 1]);     // buttom object updated
             _hero.setVision(VisionPosition.East, mymap[_hero.getX() + 1, _hero.getY()]);        // right object updated
-            _hero.setVision(VisionPosition.West, mymap[_hero.getX() - 1, _hero.getY()]);      // right object updated
+            _hero.setVision(VisionPosition.West, mymap[_hero.getX() - 1, _hero.getY()]);      // left object updated
 
             // 2. update Goblin visions
 
             for (int index = 0; index < enemies.Length; index++)
             {
-                enemies[index].setVision(VisionPosition.North, mymap[enemies[index].getX(), enemies[index].getY() - 1]);
-                enemies[index].setVision(VisionPosition.South, mymap[enemies[index].getX(), enemies[index].getY() + 1]);
-                enemies[index].setVision(VisionPosition.East, mymap[enemies[index].getX() + 1, enemies[index].getY()]);
-                enemies[index].setVision(VisionPosition.West, mymap[enemies[index].getX() - 1, enemies[index].getY()]);
+                if (!enemies[index].isDead())
+                {
+                    enemies[index].setVision(VisionPosition.North, mymap[enemies[index].getX(), enemies[index].getY() - 1]);
+                    enemies[index].setVision(VisionPosition.South, mymap[enemies[index].getX(), enemies[index].getY() + 1]);
+                    enemies[index].setVision(VisionPosition.East, mymap[enemies[index].getX() + 1, enemies[index].getY()]);
+                    enemies[index].setVision(VisionPosition.West, mymap[enemies[index].getX() - 1, enemies[index].getY()]);
+                }
             }
         }
 
@@ -75,6 +98,8 @@ namespace GADE_Task_3
                 case TileType.goblin: randPos(TileType.goblin, position); newObject = new Goblin(position[0], position[1]); break;
                 case TileType.hero: randPos(TileType.hero, position); newObject = new Hero(position[0], position[1]); break;
                 case TileType.empty_tile: randPos(TileType.empty_tile, position); newObject = new EmptyTile(position[0], position[1]); break;
+                case TileType.mage: randPos(TileType.mage, position); newObject = new Mage(position[0], position[1]); break;    // section updated to include mage creation
+                case TileType.gold: randPos(TileType.gold, position); newObject = new Gold(position[0], position[1]); break;    // section updated to include gold creation
             }
             return newObject;
         }

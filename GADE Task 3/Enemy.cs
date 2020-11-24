@@ -6,21 +6,20 @@ using System.Threading.Tasks;
 
 namespace GADE_Task_3
 {
-    abstract class Enemy: Character
+    abstract class Enemy : Character
     {
-
-
         protected Random R;
 
-        public  Enemy(int x, int y, TileType i, int d, int h, int hm) : base(x, y, i) { setDamage(d); setHP(h); setMaxHP(hm); R = new Random();  }
+        public Enemy(int x, int y, TileType i, int d, int h, int hm) : base(x, y, i) { setDamage(d); setHP(h); setMaxHP(hm); R = new Random(); }
 
+        public abstract override MovementEnum ReturnMove(MovementEnum move = 0);
 
-        public abstract override MovementEnum ReturnMove(MovementEnum move = 0); 
-
-        public override string ToString() 
+        public override string ToString()
         {
-            return "Enemy at ["+getX().ToString() + ", "+ getY().ToString() + "] (" + getDamage().ToString()+ " DMG)" ;
+            return I.ToString() + " at [" + getX().ToString() + ", " + getY().ToString() + "] (" + getDamage().ToString() + " DMG)";
         }
     }
 
 }
+
+

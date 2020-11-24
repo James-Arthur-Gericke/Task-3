@@ -22,17 +22,37 @@ namespace GADE_Task_3
         public Form1()
         {
             InitializeComponent();
-            InitializeMap();
+            CreateMap(); UpdateCharacterColourCode(); UpdateItemsColourCode(); DisplayMap();
+            CreateCharacterStats(); UpdateCharacterStatsColourCode(); DisplayCharacterStats();
         }
 
-        private void InitializeMap()
+
+
+        // Create Methods Start here ############################################################################
+        private void CreateMap() // Method creates only the map labels only
         {
             gameMapLabels = new Label[myMap.GameMap.getMapWidth(), myMap.GameMap.getMapHeight()];
-            enemyStats = new Label[myMap.GameMap.Enemies.Length];
-            LoadMap(); LoadCharacterStats();
+
+            for (int index = 0; index < myMap.GameMap.getMapWidth(); index++)
+            {
+                for (int index2 = 0; index2 < myMap.GameMap.getMapHeight(); index2++)
+                {
+                    gameMapLabels[index, index2] = CreateLabel(positionScale * myMap.GameMap.getTile(index, index2).getX(), positionScale * myMap.GameMap.getTile(index, index2).getY(), IdentityToStringConverter(myMap.GameMap.getTile(index, index2).I));
+                }
+            }
         }
 
-        public Label getLabel(int x, int y, string I)
+        private void CreateCharacterStats()
+        {
+            enemyStats = new Label[myMap.GameMap.Enemies.Length]; heroStats = new Label();
+            heroStats = CreatecharacterLable(myMap.GameMap._Hero.ToString()); heroStats.Location = new Point(500, 350); heroStats.Width = 75; heroStats.Height = 100;
+            enemyStats[0] = CreatecharacterLable(myMap.GameMap.Enemies[0].ToString() + "\n HP: " + myMap.GameMap.Enemies[0].getHP().ToString() + " / " + myMap.GameMap.Enemies[0].getMaxHP().ToString()); enemyStats[0].Location = new Point(465, 10); enemyStats[0].Width = 130; enemyStats[0].Height = 45;
+            enemyStats[1] = CreatecharacterLable(myMap.GameMap.Enemies[1].ToString() + "\n HP: " + myMap.GameMap.Enemies[1].getHP().ToString() + " / " + myMap.GameMap.Enemies[1].getMaxHP().ToString()); enemyStats[1].Location = new Point(465, 60); enemyStats[1].Width = 130; enemyStats[1].Height = 45;
+            enemyStats[2] = CreatecharacterLable(myMap.GameMap.Enemies[2].ToString() + "\n HP: " + myMap.GameMap.Enemies[2].getHP().ToString() + " / " + myMap.GameMap.Enemies[2].getMaxHP().ToString()); enemyStats[2].Location = new Point(715, 10); enemyStats[2].Width = 130; enemyStats[2].Height = 45;
+            enemyStats[3] = CreatecharacterLable(myMap.GameMap.Enemies[3].ToString() + "\n HP: " + myMap.GameMap.Enemies[3].getHP().ToString() + " / " + myMap.GameMap.Enemies[3].getMaxHP().ToString()); enemyStats[3].Location = new Point(715, 60); enemyStats[3].Width = 130; enemyStats[3].Height = 45;
+        }
+
+        public Label CreateLabel(int x, int y, string I)
         {
             Label myLabel = new Label();
             myLabel.Text = I;
@@ -46,20 +66,23 @@ namespace GADE_Task_3
             return myLabel;
         }
 
-
-        public void LoadMap()
+        public Label CreatecharacterLable(string stats)
         {
-            for (int index = 0; index < myMap.GameMap.getMapWidth(); index++)
-            {
-                for (int index2 = 0; index2 < myMap.GameMap.getMapHeight(); index2++)
-                {
-                    gameMapLabels[index, index2] = getLabel(positionScale * myMap.GameMap.getTile(index, index2).getX(), positionScale * myMap.GameMap.getTile(index, index2).getY(), IdentityToStringConverter(myMap.GameMap.getTile(index, index2).I));
-                }
-            }
-            LoadEnemyColourCode();
+            Label myLabel = new Label(); myLabel.Text = stats;
+            myLabel.ForeColor = Color.Red; myLabel.BackColor = Color.White;
+            myLabel.Location = new Point(500, 380); myLabel.Width = 70; myLabel.Height = 90;
+            myLabel.TextAlign = ContentAlignment.MiddleCenter; return myLabel;
+        }
 
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
 
+
+
+
+
+        // Display Methods Start here #####################################################################
+
+        private void DisplayMap() // Method only displays the map
+        {
             for (int index = 0; index < myMap.GameMap.getMapWidth(); index++)
             {
                 for (int index2 = 0; index2 < myMap.GameMap.getMapHeight(); index2++)
@@ -69,91 +92,102 @@ namespace GADE_Task_3
             }
         }
 
-        private void LoadEnemyColourCode()
+        private void DisplayCharacterStats() // Method only displays character stats
         {
-            gameMapLabels[myMap.GameMap.Enemies[0].getX(), myMap.GameMap.Enemies[0].getY()].ForeColor = System.Drawing.Color.DeepPink;
-            gameMapLabels[myMap.GameMap.Enemies[1].getX(), myMap.GameMap.Enemies[1].getY()].ForeColor = System.Drawing.Color.Blue;
-            gameMapLabels[myMap.GameMap.Enemies[2].getX(), myMap.GameMap.Enemies[2].getY()].ForeColor = System.Drawing.Color.Green;
-            gameMapLabels[myMap.GameMap.Enemies[3].getX(), myMap.GameMap.Enemies[3].getY()].ForeColor = System.Drawing.Color.Red;
+            Controls.Add(heroStats); for (int index = 0; index < enemyStats.Length; index++) Controls.Add(enemyStats[index]);
         }
 
-        private string IdentityToStringConverter(TileType Identity)
-        {
-            string answer = "";
 
-            switch (Identity)
-            {
-                case TileType.empty_tile: answer = "."; break;
-                case TileType.goblin: answer = "G"; break;
-                case TileType.hero: answer = "H"; break;
-                case TileType.obstacle: answer = "X"; break;
-            }
-            return answer;
+
+
+
+
+        // Object colour codes start here ####################################################
+        private void UpdateCharacterColourCode()
+        {
+            if (!myMap.GameMap.Enemies[0].isDead()) gameMapLabels[myMap.GameMap.Enemies[0].getX(), myMap.GameMap.Enemies[0].getY()].ForeColor = System.Drawing.Color.DeepPink;
+            if (!myMap.GameMap.Enemies[1].isDead()) gameMapLabels[myMap.GameMap.Enemies[1].getX(), myMap.GameMap.Enemies[1].getY()].ForeColor = System.Drawing.Color.Blue;
+            if (!myMap.GameMap.Enemies[2].isDead()) gameMapLabels[myMap.GameMap.Enemies[2].getX(), myMap.GameMap.Enemies[2].getY()].ForeColor = System.Drawing.Color.Green;
+            if (!myMap.GameMap.Enemies[3].isDead()) gameMapLabels[myMap.GameMap.Enemies[3].getX(), myMap.GameMap.Enemies[3].getY()].ForeColor = System.Drawing.Color.Red;
+            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
         }
 
-        // Hero game controls start here ########################################################
+        private void UpdateCharacterStatsColourCode()
+        {
+            enemyStats[0].ForeColor = System.Drawing.Color.DeepPink;
+            enemyStats[1].ForeColor = System.Drawing.Color.Blue;
+            enemyStats[2].ForeColor = System.Drawing.Color.Green;
+            enemyStats[3].ForeColor = System.Drawing.Color.Red;
+            heroStats.ForeColor = System.Drawing.Color.Black;
+        }
+
+        private void UpdateItemsColourCode()
+        {
+            gameMapLabels[myMap.GameMap.MyItems[0].getX(), myMap.GameMap.MyItems[0].getY()].ForeColor = System.Drawing.Color.Gold;
+            gameMapLabels[myMap.GameMap.MyItems[1].getX(), myMap.GameMap.MyItems[1].getY()].ForeColor = System.Drawing.Color.Gold;
+            gameMapLabels[myMap.GameMap.MyItems[2].getX(), myMap.GameMap.MyItems[2].getY()].ForeColor = System.Drawing.Color.Gold;
+        }
+
+
+
+
+
+
+        // Hero player controls start here ########################################################
         private void button1_Click(object sender, EventArgs e)
         {
-            myMap.MovePlayer(MovementEnum.Up);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap._Hero.I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY() + 1].Text = IdentityToStringConverter(myMap.GameMap.Mymap[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY() + 1].I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
-            heroStats.Text = myMap.GameMap._Hero.ToString();
+            myMap.MovePlayer(MovementEnum.Up); myMap.MoveEnemies(); myMap.EnemyAttacks(); UpdateMapText(); UpdateCharacterColourCode(); UpdateCharacterStatsText();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            myMap.MovePlayer(MovementEnum.Down);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap._Hero.I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY() - 1].Text = IdentityToStringConverter(myMap.GameMap.Mymap[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY() - 1].I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
-            heroStats.Text = myMap.GameMap._Hero.ToString();
+            myMap.MovePlayer(MovementEnum.Down); myMap.MoveEnemies(); myMap.EnemyAttacks(); UpdateMapText(); UpdateCharacterColourCode(); UpdateCharacterStatsText();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            myMap.MovePlayer(MovementEnum.Left);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap._Hero.I);
-            gameMapLabels[myMap.GameMap._Hero.getX() + 1, myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap.Mymap[myMap.GameMap._Hero.getX() + 1, myMap.GameMap._Hero.getY()].I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
-            heroStats.Text = myMap.GameMap._Hero.ToString();
+            myMap.MovePlayer(MovementEnum.Left); myMap.MoveEnemies(); myMap.EnemyAttacks(); UpdateMapText(); UpdateCharacterColourCode(); UpdateCharacterStatsText();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            myMap.MovePlayer(MovementEnum.Right);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap._Hero.I);
-            gameMapLabels[myMap.GameMap._Hero.getX() - 1, myMap.GameMap._Hero.getY()].Text = IdentityToStringConverter(myMap.GameMap.Mymap[myMap.GameMap._Hero.getX() - 1, myMap.GameMap._Hero.getY()].I);
-            gameMapLabels[myMap.GameMap._Hero.getX(), myMap.GameMap._Hero.getY()].ForeColor = System.Drawing.Color.Black;
+            myMap.MovePlayer(MovementEnum.Right); myMap.MoveEnemies(); myMap.EnemyAttacks(); UpdateMapText(); UpdateCharacterColourCode(); UpdateCharacterStatsText();
+        }
+
+        // player controls end here ###############################################################
+
+
+
+
+
+
+
+
+        // Runtime Update Methods start here ###############################################################
+
+        public void UpdateMapText()
+        {
+            for (int index = 0; index < myMap.GameMap.getMapHeight(); index++)
+            {
+                for (int index2 = 0; index2 < myMap.GameMap.getMapWidth(); index2++)
+                {
+                    gameMapLabels[index2, index].Text = IdentityToStringConverter(myMap.GameMap.Mymap[index2, index].I);
+                }
+            }
+        }
+
+        public void UpdateCharacterStatsText()
+        {
             heroStats.Text = myMap.GameMap._Hero.ToString();
+            enemyStats[0].Text = myMap.GameMap.Enemies[0].ToString() + "\n HP: " + myMap.GameMap.Enemies[0].getHP().ToString() + " / " + myMap.GameMap.Enemies[0].getMaxHP().ToString();
+            enemyStats[1].Text = myMap.GameMap.Enemies[1].ToString() + "\n HP: " + myMap.GameMap.Enemies[1].getHP().ToString() + " / " + myMap.GameMap.Enemies[1].getMaxHP().ToString();
+            enemyStats[2].Text = myMap.GameMap.Enemies[2].ToString() + "\n HP: " + myMap.GameMap.Enemies[2].getHP().ToString() + " / " + myMap.GameMap.Enemies[2].getMaxHP().ToString();
+            enemyStats[3].Text = myMap.GameMap.Enemies[3].ToString() + "\n HP: " + myMap.GameMap.Enemies[3].getHP().ToString() + " / " + myMap.GameMap.Enemies[3].getMaxHP().ToString();
         }
-
-        // Hero game controls end here ###############################################################
-
-        public Label characterLable(string stats)
-        {
-            Label myLabel = new Label();
-            myLabel.Text = stats;
-            myLabel.ForeColor = Color.Red;
-            myLabel.BackColor = Color.White;
-            myLabel.Location = new Point(500, 380);
-            myLabel.Width = 70;
-            myLabel.Height = 90;
-            myLabel.TextAlign = ContentAlignment.MiddleCenter;
+        // Runtime Updates Methods end here
 
 
-            return myLabel;
-        }
 
-        public void LoadCharacterStats()
-        {
-            heroStats = characterLable(myMap.GameMap._Hero.ToString());
-            enemyStats[0] = characterLable(myMap.GameMap.Enemies[0].ToString() + "\n HP: " + myMap.GameMap.Enemies[0].getHP().ToString() + " / " + myMap.GameMap.Enemies[0].getMaxHP().ToString()); enemyStats[0].Location = new Point(465, 10); enemyStats[0].ForeColor = System.Drawing.Color.DeepPink; enemyStats[0].Width = 130; enemyStats[0].Height = 45;
-            enemyStats[1] = characterLable(myMap.GameMap.Enemies[1].ToString() + "\n HP: " + myMap.GameMap.Enemies[1].getHP().ToString() + " / " + myMap.GameMap.Enemies[1].getMaxHP().ToString()); enemyStats[1].Location = new Point(465, 60); enemyStats[1].ForeColor = System.Drawing.Color.Blue; enemyStats[1].Width = 130; enemyStats[1].Height = 45;
-            enemyStats[2] = characterLable(myMap.GameMap.Enemies[2].ToString() + "\n HP: " + myMap.GameMap.Enemies[2].getHP().ToString() + " / " + myMap.GameMap.Enemies[2].getMaxHP().ToString()); enemyStats[2].Location = new Point(715, 10); enemyStats[2].ForeColor = System.Drawing.Color.Green; enemyStats[2].Width = 130; enemyStats[2].Height = 45;
-            enemyStats[3] = characterLable(myMap.GameMap.Enemies[3].ToString() + "\n HP: " + myMap.GameMap.Enemies[3].getHP().ToString() + " / " + myMap.GameMap.Enemies[3].getMaxHP().ToString()); enemyStats[3].Location = new Point(715, 60); enemyStats[3].ForeColor = System.Drawing.Color.Red; enemyStats[3].Width = 130; enemyStats[3].Height = 45;
-            Controls.Add(heroStats); Controls.Add(enemyStats[0]); Controls.Add(enemyStats[1]); Controls.Add(enemyStats[2]); Controls.Add(enemyStats[3]);
-        }
 
         // Enemy shoot buttoms start here ############################# 
 
@@ -173,6 +207,9 @@ namespace GADE_Task_3
                     gameMapLabels[myMap.GameMap.Enemies[0].getX(), myMap.GameMap.Enemies[0].getY()].Text = "."; gameMapLabels[myMap.GameMap.Enemies[0].getX(), myMap.GameMap.Enemies[0].getY()].ForeColor = System.Drawing.Color.Red;
                 }
             }
+
+            myMap.EnemyAttacks(); myMap.GameMap.UpdateVision(); UpdateCharacterStatsText();
+            // Need to manage updates to all object states and appearance
         }
 
         private void button7_Click(object sender, EventArgs e)
@@ -190,6 +227,9 @@ namespace GADE_Task_3
                     gameMapLabels[myMap.GameMap.Enemies[1].getX(), myMap.GameMap.Enemies[1].getY()].Text = "."; gameMapLabels[myMap.GameMap.Enemies[1].getX(), myMap.GameMap.Enemies[1].getY()].ForeColor = System.Drawing.Color.Red;
                 }
             }
+
+            myMap.EnemyAttacks(); myMap.GameMap.UpdateVision(); UpdateCharacterStatsText();
+            // Need to manage updates to all object states and appearance
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -207,6 +247,9 @@ namespace GADE_Task_3
                     gameMapLabels[myMap.GameMap.Enemies[2].getX(), myMap.GameMap.Enemies[2].getY()].Text = "."; gameMapLabels[myMap.GameMap.Enemies[2].getX(), myMap.GameMap.Enemies[2].getY()].ForeColor = System.Drawing.Color.Red;
                 }
             }
+
+            myMap.EnemyAttacks(); myMap.GameMap.UpdateVision(); UpdateCharacterStatsText();
+            // Need to manage updates to all object states and appearance
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -224,10 +267,34 @@ namespace GADE_Task_3
                     gameMapLabels[myMap.GameMap.Enemies[3].getX(), myMap.GameMap.Enemies[3].getY()].Text = "."; gameMapLabels[myMap.GameMap.Enemies[3].getX(), myMap.GameMap.Enemies[3].getY()].ForeColor = System.Drawing.Color.Red;
                 }
             }
+
+            myMap.EnemyAttacks(); myMap.GameMap.UpdateVision(); UpdateCharacterStatsText();
+            // Need to manage updates to all object states and appearance
         }
 
         // Enemy shoot buttoms end here ############################# 
 
-        
+
+
+
+
+
+        // General Supporting Methods Start Here ##########################################
+
+        private string IdentityToStringConverter(TileType Identity)
+        {
+            string answer = "";
+
+            switch (Identity)
+            {
+                case TileType.empty_tile: answer = "."; break;
+                case TileType.goblin: answer = "G"; break;
+                case TileType.hero: answer = "H"; break;
+                case TileType.obstacle: answer = "X"; break;
+                case TileType.mage: answer = "M"; break;
+                case TileType.gold: answer = "g"; break;
+            }
+            return answer;
+        }
     }
 }
